@@ -1,13 +1,38 @@
 import 'dart:io';
 
 void main() {
+  Login login = Login();
+  Game game = Game();
 
-
+  login.login();
+  game.loadCharacterStats();
 }
 
 //게임을 정의하기 위한 클래스
 class Game{
-  //게임을 시작하는 메서드
+  Login start = Login();
+
+  void loadCharacterStats() {
+    try {
+      final file = File('../assets/characters.txt');
+      final contents = file.readAsStringSync();
+      final stats = contents.split(',');
+      if (stats.length != 3) throw FormatException('Invalid character data');
+        
+      int health = int.parse(stats[0]);
+      int attack = int.parse(stats[1]);
+      int defense = int.parse(stats[2]);
+        
+      String name = start.uName;
+      Character character = Character(name, health, attack, defense);
+    } catch (e) {
+      print('캐릭터 데이터를 불러오는 데 실패했습니다: $e');
+      exit(1);
+    }
+  }
+
+
+  //게임을 재시작하는 메서드
   startGame(){
 
   }
@@ -25,19 +50,20 @@ class Game{
 
 
 class Login {
-
+  String uName = '';
   //로그인 메소드
   login(){
     RegExp regex = RegExp(r'^[a-zA-Z가-힣]+$');
     print('이름을 입력하세요_영문');
-    String? uName = stdin.readLineSync();
-    if(regex.hasMatch(uName!)){
+    String? name = stdin.readLineSync();
+    if(regex.hasMatch(name!)){
+      uName = name;
       print('게임스타트');
-      print(uName);
+      print(name);
     }
     else{
       print('이게뭐야');
-      print(uName);
+      print(name);
     }
   }
 }
@@ -45,11 +71,11 @@ class Login {
 //캐릭터를 정의하기 위한 클래스
 class Character {
   String cName;  //캐릭터 이름
-  int cStamina;  //캐릭터 체력
+  int cHealth;  //캐릭터 체력
   int cAttack;   //캐릭터 공격력
   int cDefense;  //캐릭터 방어력
 
-  Character(this.cName, this.cStamina, this.cAttack, this.cDefense);
+  Character(this.cName, this.cHealth, this.cAttack, this.cDefense);
 
   //캐릭터가 몬스터에게 공격하는 메서드
   // attackMonster(Monster monster){
