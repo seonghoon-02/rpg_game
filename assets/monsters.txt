@@ -1,10 +1,1 @@
-SpiderMan,10,10,3
-BatMan,20,10,3
-SuperMan,20,10,5
-IronMan,20,10,5
-CaptainAmerica,30,5,7
-Thor,30,15,5
-Hulk,30,15,5
-DoctorStrange,10,10,3
-BlackPanther,20,10,5
-AntMan,10,5,3
+SpiderMan,10,10,3,BatMan,20,10,3,SuperMan,20,10,5,IronMan,20,10,5,CaptainAmerica,30,5,7,Thor,30,15,5,Hulk,30,15,5,DoctorStrange,10,10,3,BlackPanther,20,10,5,AntMan,10,5,3

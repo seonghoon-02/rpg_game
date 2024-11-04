@@ -5,7 +5,6 @@ void main() {
   Game game = Game();
 
   login.login();
-  game.loadCharacterStats();
 }
 
 //게임을 정의하기 위한 클래스
@@ -30,6 +29,28 @@ class Game{
       exit(1);
     }
   }
+
+  void loadMonsterStats() {
+  try {
+    final file = File('../assets/monsters.txt');
+    final contents = file.readAsStringSync();
+    final stats = contents.split(',');
+    if (stats.length != 40) throw FormatException('Invalid character data');
+
+    List<Monster> monsterList = [];    
+
+    for(int i = 0; i < 40; i += 4){
+      String name = stats[0];
+      int health = int.parse(stats[1]);
+      int attack = int.parse(stats[2]);
+      int defense = int.parse(stats[3]);
+      monsterList.add(Monster(name, health, attack, defense));
+    }        
+  } catch (e) {
+    print('몬스터 데이터를 불러오는 데 실패했습니다: $e');
+    exit(1);
+  }
+}
 
 
   //게임을 재시작하는 메서드
@@ -100,7 +121,7 @@ class Monster {
   int mAttack;   //몬스터 공격력(캐릭터 방어력<= 랜덤 <=최대값)
   int mDefense = 0;  //몬스터 방어력(0)
 
-  Monster(this.mName, this.mStamina, this.mAttack);
+  Monster(this.mName, this.mStamina, this.mAttack, this.mDefense);
 
   //몬스터가 캐릭터에게 공격하는 메서드
   // attackCharacter(Character character)){
