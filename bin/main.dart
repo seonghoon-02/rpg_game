@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 void main() {
   Login login = Login();
@@ -10,6 +11,8 @@ void main() {
 //게임을 정의하기 위한 클래스
 class Game{
   Login start = Login();
+  List<Monster> monsterList = [];
+  late Character character; //loadCharacterStats()에서 정의됨. late사용.
 
   void loadCharacterStats() {
     try {
@@ -23,7 +26,7 @@ class Game{
       int defense = int.parse(stats[2]);
         
       String name = start.uName;
-      Character character = Character(name, health, attack, defense);
+      character = Character(name, health, attack, defense);
     } catch (e) {
       print('캐릭터 데이터를 불러오는 데 실패했습니다: $e');
       exit(1);
@@ -31,26 +34,27 @@ class Game{
   }
 
   void loadMonsterStats() {
-  try {
-    final file = File('../assets/monsters.txt');
-    final contents = file.readAsStringSync();
-    final stats = contents.split(',');
-    if (stats.length != 40) throw FormatException('Invalid character data');
+    try {
+      final file = File('../assets/monsters.txt');
+      final contents = file.readAsStringSync();
+      final stats = contents.split(',');
+      if (stats.length != 40) throw FormatException('Invalid character data');
 
-    List<Monster> monsterList = [];    
-
-    for(int i = 0; i < 40; i += 4){
-      String name = stats[0];
-      int health = int.parse(stats[1]);
-      int attack = int.parse(stats[2]);
-      int defense = int.parse(stats[3]);
-      monsterList.add(Monster(name, health, attack, defense));
-    }        
-  } catch (e) {
-    print('몬스터 데이터를 불러오는 데 실패했습니다: $e');
-    exit(1);
+      for(int i = 0; i < 40; i += 4){
+        String name = stats[0];
+        int health = int.parse(stats[1]);
+        int attack = Random().nextInt(int.parse(stats[2])-5) + 5;
+        int defense = int.parse(stats[3]);
+        monsterList.add(Monster(name, health, attack, defense));
+      }        
+    } catch (e) {
+      print('몬스터 데이터를 불러오는 데 실패했습니다: $e');
+      exit(1);
+    }
+    for(int i = 0; i < 10; i++){
+      print(monsterList[i].mAttack);
+    }
   }
-}
 
 
   //게임을 재시작하는 메서드
