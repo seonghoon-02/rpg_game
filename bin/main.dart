@@ -6,6 +6,9 @@ void main() {
   Game game = Game();
 
   login.login();
+  game.loadCharacterStats();
+  print('${game.character.cName} - 체력: ${game.character.cHealth}, 공격력: ${game.character.cAttack}, 방어력: ${game.character.cDefense}');
+
 }
 
 //게임을 정의하기 위한 클래스
@@ -51,9 +54,6 @@ class Game{
       print('몬스터 데이터를 불러오는 데 실패했습니다: $e');
       exit(1);
     }
-    for(int i = 0; i < 10; i++){
-      print(monsterList[i].mAttack);
-    }
   }
 
 
@@ -79,16 +79,14 @@ class Login {
   //로그인 메소드
   login(){
     RegExp regex = RegExp(r'^[a-zA-Z가-힣]+$');
-    print('이름을 입력하세요_영문');
+    print('이름을 입력하세요_only 영문');
     String? name = stdin.readLineSync();
     if(regex.hasMatch(name!)){
       uName = name;
-      print('게임스타트');
-      print(name);
+      print('게임을 시작합니다!');
     }
     else{
-      print('이게뭐야');
-      print(name);
+      print('유요하지 않습니다. 영문으로만 입력해주세요.');
     }
   }
 }
