@@ -51,7 +51,7 @@ class Game{
       for(int i = 0; i < 40; i += 4){
         String mName = stats[i];
         int mHealth = int.parse(stats[i + 1]);
-        int mAttack = character.cDefense + random.nextInt(int.parse(stats[i + 2]) - character.cDefense);
+        int mAttack = character.cDefense + random.nextInt(int.parse(stats[i + 2]) - character.cDefense) + 1; //min 캐릭터 방어력 +1
         int mDefense = int.parse(stats[i + 3]);
         monsterList.add(Monster(mName, mHealth, mAttack, mDefense));
       }
@@ -67,6 +67,10 @@ class Game{
     if(monsterList.isEmpty){   //몬스터 리스트에 남은 몬스터가 없을시 종료 
         print('모든 몬스터를 물리쳤습니다!');
         return false;
+    }
+
+    if(character.cHealth <= 0){
+      return false;
     }
 
     while(true){
@@ -90,6 +94,10 @@ class Game{
     print('${monster.mName} - 체력: ${monster.mHealth}, 공격력: ${monster.mAttack}');
 
     while(true){
+      if(character.cHealth <= 0){
+        print('${character.cName}이 패배하였습니다.');
+        break;
+      }
       print('');
       print('$name의 턴');
       stdout.write('행동을 선택하세요 (1: 공격, 2: 방어): '); //줄바꿈 없이 선택한 번호 출력
@@ -177,7 +185,13 @@ class Character {
 
   //상태 출력 메서드
   showStatus(){
-    print('$cName - 체력: $cHealth, 공격력: $cAttack, 방어력: $cDefense');
+    int health;
+    if (cHealth < 0){
+      health = 0;
+    }else{
+      health = cHealth;
+    }
+    print('$cName - 체력: $health, 공격력: $cAttack, 방어력: $cDefense');
   }
 }
 
