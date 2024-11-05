@@ -6,21 +6,20 @@ void main() {
   Game game = Game();
 
   login.login();
-  game.loadCharacterStats();
+  game.loadCharacterStats(login.uName);
   game.loadMonsterStats();
   print('${game.character.cName} - 체력: ${game.character.cHealth}, 공격력: ${game.character.cAttack}, 방어력: ${game.character.cDefense}');
-  game.battle();
+  game.battle(login.uName);
 
 }
 
 //게임을 정의하기 위한 클래스
 class Game{
-  Login start = Login();
   Random random = Random();
   List<Monster> monsterList = [];
   late Character character; //loadCharacterStats()에서 정의됨. late사용.
 
-  void loadCharacterStats() {
+  void loadCharacterStats(name) {
     try {
       final file = File('../assets/characters.txt');
       final contents = file.readAsStringSync();
@@ -30,8 +29,7 @@ class Game{
       int health = int.parse(stats[0]);
       int attack = int.parse(stats[1]);
       int defense = int.parse(stats[2]);
-        
-      String name = start.uName;
+
       character = Character(name, health, attack, defense);
     } catch (e) {
       print('캐릭터 데이터를 불러오는 데 실패했습니다: $e');
@@ -66,11 +64,35 @@ class Game{
   }
 
   //전투를 진행하는 메서드
-  battle(){
+  battle(name){
     print('');
     print('새로운 몬스터가 나타났습니다!');
     Monster monster = getRandomMonster();
     print('${monster.mName} - 체력: ${monster.mHealth}, 공격력: ${monster.mAttack}');
+
+    while(true){
+      print('');
+      print('$name의 턴');
+      stdout.write('행동을 선택하세요 (1: 공격, 2: 방어): '); //줄바꿈 없이 선택한 번호 출력
+      String? choise = stdin.readLineSync();
+      if(choise == '1'){
+        character.attackMonster(monster);
+      }else if(choise == '2'){
+
+      }else{
+        print('입력값이 유효하지 않습니다. 1, 2 중에 입력하여 주세요.');
+      }
+
+      if(monster.mHealth > 0){
+        monster.attackCharacter(character);
+        character.showStatus();
+        monster.showStatus();
+      }else{
+        print('${monster.mName}을(를) 물리쳤습니다!');
+        break;
+      }
+
+    }
     
   }
 
@@ -93,7 +115,7 @@ class Login {
       print('게임을 시작합니다!');
     }
     else{
-      print('유요하지 않습니다. 영문으로만 입력해주세요.');
+      print('유효하지 않습니다. 영문으로만 입력해주세요.');
     }
   }
 }
@@ -108,9 +130,10 @@ class Character {
   Character(this.cName, this.cHealth, this.cAttack, this.cDefense);
 
   //캐릭터가 몬스터에게 공격하는 메서드
-  // attackMonster(Monster monster){
-
-  // }
+  attackMonster(Monster monster){
+    print('$cName이(가) ${monster.mName}에게 $cAttack의 데미지를 입혔습니다.');
+    monster.mHealth -= cAttack;
+  }
 
   //방어 메서드
   defend(){
@@ -119,7 +142,7 @@ class Character {
 
   //상태 출력 메서드
   showStatus(){
-
+    print('$cName - 체력: $cHealth, 공격력: $cAttack, 방어력: $cDefense');
   }
 }
 
@@ -133,11 +156,19 @@ class Monster {
   Monster(this.mName, this.mHealth, this.mAttack, this.mDefense);
 
   //몬스터가 캐릭터에게 공격하는 메서드
-  // attackCharacter(Character character)){
+  attackCharacter(Character character){
+    print('');
+    print('$mName의 턴');
+    int damage = mAttack - character.cDefense;  //캐릭터의 방어력만큼 데미지 차감
+    if(damage < 0){
+      damage = 0;
+    }
+    print('$mName이(가) ${character.cName}에게 $damage의 데미지를 입혔습니다.');
+    character.cHealth -= damage;
+  }
 
-  // }
-
+  //몬스터의 현재 체력, 공격력 출력
   showStatus(){
-
+    print('$mName - 체력: $mHealth, 공격력: $mAttack');
   }
 }
