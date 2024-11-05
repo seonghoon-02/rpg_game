@@ -64,22 +64,22 @@ class Game{
 
   //게임을 재시작하는 메서드
   bool startGame(cName){
-    print(monsterList.length);
     if(monsterList.isEmpty){   //몬스터 리스트에 남은 몬스터가 없을시 종료 
         print('모든 몬스터를 물리쳤습니다!');
         return false;
     }
 
-    stdout.write('다음 몬스터와 싸우시겠습니까? (y/n): '); //줄바꿈 없이 선택한 번호 출력
-    String? choise = stdin.readLineSync();
-    if(choise == 'y'){
-      return true;
-    }else if(choise == 'n'){
-      return false;
-    }else{
-      print('입력값이 유효하지 않습니다. y, n 중에 입력하여 주세요.');
+    while(true){
+      stdout.write('다음 몬스터와 싸우시겠습니까? (y/n): '); //줄바꿈 없이 선택한 번호 출력
+      String? choise = stdin.readLineSync();
+      if(choise == 'y'){
+        return true;
+      }else if(choise == 'n'){
+        return false;
+      }else{
+        print('입력값이 유효하지 않습니다. y, n 중에 입력하여 주세요.');
+      }
     }
-    return true;
   }
 
   //전투를 진행하는 메서드
@@ -96,20 +96,19 @@ class Game{
       String? choise = stdin.readLineSync();
       if(choise == '1'){
         character.attackMonster(monster);
+          if(monster.mHealth > 0){
+            monster.attackCharacter(character);
+            character.showStatus();
+            monster.showStatus();
+          }else{
+            print('${monster.mName}을(를) 물리쳤습니다!');
+            print('');
+            break;
+          }
       }else if(choise == '2'){
         character.defend(monster);
       }else{
         print('입력값이 유효하지 않습니다. 1, 2 중에 입력하여 주세요.');
-      }
-
-      if(monster.mHealth > 0){
-        monster.attackCharacter(character);
-        character.showStatus();
-        monster.showStatus();
-      }else{
-        print('${monster.mName}을(를) 물리쳤습니다!');
-        print('');
-        break;
       }
     }
   }
