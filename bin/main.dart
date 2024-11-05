@@ -47,7 +47,7 @@ class Game{
       for(int i = 0; i < 40; i += 4){
         String name = stats[i];
         int health = int.parse(stats[i + 1]);
-        int attack = random.nextInt(int.parse(stats[i + 2]));
+        int attack = character.cDefense + random.nextInt(int.parse(stats[i + 2]) - character.cDefense);
         int defense = int.parse(stats[i + 3]);
         monsterList.add(Monster(name, health, attack, defense));
       }
@@ -78,7 +78,7 @@ class Game{
       if(choise == '1'){
         character.attackMonster(monster);
       }else if(choise == '2'){
-
+        character.defend(monster);
       }else{
         print('입력값이 유효하지 않습니다. 1, 2 중에 입력하여 주세요.');
       }
@@ -91,7 +91,6 @@ class Game{
         print('${monster.mName}을(를) 물리쳤습니다!');
         break;
       }
-
     }
     
   }
@@ -136,8 +135,13 @@ class Character {
   }
 
   //방어 메서드
-  defend(){
-
+  defend(Monster monster){
+    int heal = monster.mAttack - cDefense;
+    if(heal < 0){
+      heal = 0;
+    }
+    cHealth += heal;
+    print('$cName이(가) 방어 태세를 취하여 $heal 만큼 체력을 얻었습니다.');
   }
 
   //상태 출력 메서드
@@ -163,8 +167,8 @@ class Monster {
     if(damage < 0){
       damage = 0;
     }
-    print('$mName이(가) ${character.cName}에게 $damage의 데미지를 입혔습니다.');
     character.cHealth -= damage;
+    print('$mName이(가) ${character.cName}에게 $damage의 데미지를 입혔습니다.');
   }
 
   //몬스터의 현재 체력, 공격력 출력
