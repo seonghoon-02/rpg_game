@@ -7,13 +7,16 @@ void main() {
 
   login.login();
   game.loadCharacterStats();
+  game.loadMonsterStats();
   print('${game.character.cName} - 체력: ${game.character.cHealth}, 공격력: ${game.character.cAttack}, 방어력: ${game.character.cDefense}');
+  game.battle();
 
 }
 
 //게임을 정의하기 위한 클래스
 class Game{
   Login start = Login();
+  Random random = Random();
   List<Monster> monsterList = [];
   late Character character; //loadCharacterStats()에서 정의됨. late사용.
 
@@ -44,12 +47,12 @@ class Game{
       if (stats.length != 40) throw FormatException('Invalid character data');
 
       for(int i = 0; i < 40; i += 4){
-        String name = stats[0];
-        int health = int.parse(stats[1]);
-        int attack = Random().nextInt(int.parse(stats[2])-5) + 5;
-        int defense = int.parse(stats[3]);
+        String name = stats[i];
+        int health = int.parse(stats[i + 1]);
+        int attack = random.nextInt(int.parse(stats[i + 2]));
+        int defense = int.parse(stats[i + 3]);
         monsterList.add(Monster(name, health, attack, defense));
-      }        
+      }
     } catch (e) {
       print('몬스터 데이터를 불러오는 데 실패했습니다: $e');
       exit(1);
@@ -64,12 +67,16 @@ class Game{
 
   //전투를 진행하는 메서드
   battle(){
-
+    print('');
+    print('새로운 몬스터가 나타났습니다!');
+    Monster monster = getRandomMonster();
+    print('${monster.mName} - 체력: ${monster.mHealth}, 공격력: ${monster.mAttack}');
+    
   }
 
   //랜덤으로 몬스터를 불러오는 메서드
-  getRandomMonster(){
-
+  Monster getRandomMonster(){
+    return monsterList[random.nextInt(monsterList.length-1)];  //랜덤으로 몬스터리스트에서 몬스터 불러오기
   }
 }
 
@@ -119,11 +126,11 @@ class Character {
 //몬스터를 정의하기 위한 클래스
 class Monster {
   String mName;  //몬스터 이름
-  int mStamina;  //몬스터 체력
+  int mHealth;  //몬스터 체력
   int mAttack;   //몬스터 공격력(캐릭터 방어력<= 랜덤 <=최대값)
   int mDefense = 0;  //몬스터 방어력(0)
 
-  Monster(this.mName, this.mStamina, this.mAttack, this.mDefense);
+  Monster(this.mName, this.mHealth, this.mAttack, this.mDefense);
 
   //몬스터가 캐릭터에게 공격하는 메서드
   // attackCharacter(Character character)){
