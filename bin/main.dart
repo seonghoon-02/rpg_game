@@ -64,6 +64,12 @@ class Game{
 
   //게임을 재시작하는 메서드
   bool startGame(cName){
+    print(monsterList.length);
+    if(monsterList.isEmpty){   //몬스터 리스트에 남은 몬스터가 없을시 종료 
+        print('모든 몬스터를 물리쳤습니다!');
+        return false;
+    }
+
     stdout.write('다음 몬스터와 싸우시겠습니까? (y/n): '); //줄바꿈 없이 선택한 번호 출력
     String? choise = stdin.readLineSync();
     if(choise == 'y'){
@@ -110,7 +116,12 @@ class Game{
 
   //랜덤으로 몬스터를 불러오는 메서드
   Monster getRandomMonster(){
-    int randomNum = random.nextInt(monsterList.length-1);
+    int randomNum;
+    if(monsterList.length == 1){  //random.nextInt(0)일때 오류 발생하여 추가함
+      randomNum = 0;
+    }else{
+      randomNum = random.nextInt(monsterList.length-1);
+    } 
 
     Monster monster = monsterList[randomNum]; //랜덤으로 몬스터리스트에서 몬스터 불러오기
     monsterList.removeAt(randomNum);  //몬스터리스트에서 불러온 몬스터 삭제
