@@ -35,8 +35,9 @@ class Game{
       int cAttack = int.parse(stats[1]);
       int cDefense = int.parse(stats[2]);
       Map<String, String> result = {'monster name' : 'win or lose'};
+      bool item = true;
       
-      character = Character(cName, cHealth, cAttack, cDefense, result);
+      character = Character(cName, cHealth, cAttack, cDefense, result, item);
 
       
       if(Random().nextInt(10) < 3){  //캐릭터 생성시 33%확률로 보너스 체력 부여.
@@ -115,26 +116,49 @@ class Game{
       print('');
       print('$name의 턴');
 
-      stdout.write('행동을 선택하세요 (1: 공격, 2: 방어): '); //줄바꿈 없이 선택한 번호 출력
+      String attackManu;
+      if(character.item){
+        attackManu = '행동을 선택하세요 (1: 공격, 2: 방어, 3: item사용_남은 횟수 1회): ';
+      }else{
+        attackManu = '행동을 선택하세요 (1: 공격, 2: 방어): ';
+      }
+
+      stdout.write(attackManu); //줄바꿈 없이 선택한 번호 출력
       String? choise = stdin.readLineSync();
 
       if(choise == '1'){
-        character.attackMonster(monster);
-          if(monster.mHealth > 0){
-            monster.attackCharacter(character);
-            character.showStatus();
-            monster.showStatus();
-          }else{
-            print('${monster.mName}을(를) 물리쳤습니다!');
-            character.result[monster.mName] = 'win';   //결과 기록
-            print('');
-            break;
-          }
+        if(attackTurn(monster, false)){
+          break;
+        };
       }else if(choise == '2'){
         character.defend(monster);
+        monster.attackCharacter(character);
+        character.showStatus();
+        monster.showStatus();
+      }else if(choise == '3' && character.item){
+        character.itemUse();
+        attackTurn(monster, true);
       }else{
-        print('입력값이 유효하지 않습니다. 1, 2 중에 입력하여 주세요.');
+        print('입력값이 유효하지 않습니다.');
       }
+    }      
+  }
+
+  bool attackTurn(Monster monster, bool itemAttack){  //공격 턴 주고 받는 함수. 위의 1번, 3번 선택시 공격해야 하므로 코드 중복으로 함수로 빼옴.
+    character.attackMonster(monster);
+    if(monster.mHealth > 0){
+      monster.attackCharacter(character);
+      if(itemAttack){
+        character.cAttack ~/= 2;  //공격력 원상복구
+      }
+      character.showStatus();
+      monster.showStatus();
+      return false;
+    }else{
+      print('${monster.mName}을(를) 물리쳤습니다!');
+      character.result[monster.mName] = 'win';   //결과 기록
+      print('');
+      return true;
     }
   }
 
@@ -181,9 +205,10 @@ class Character {
   int cHealth;  //캐릭터 체력
   int cAttack;   //캐릭터 공격력
   int cDefense;  //캐릭터 방어력
-  Map<String, String> result;
+  Map<String, String> result; //전적 기록
+  bool item;
 
-  Character(this.cName, this.cHealth, this.cAttack, this.cDefense, this.result);
+  Character(this.cName, this.cHealth, this.cAttack, this.cDefense, this.result, this.item);
 
   //캐릭터가 몬스터에게 공격하는 메서드
   attackMonster(Monster monster){
@@ -210,6 +235,13 @@ class Character {
       health = cHealth;
     }
     print('$cName - 체력: $health, 공격력: $cAttack, 방어력: $cDefense');
+  }
+
+  //item사용시 공격력 2배
+  itemUse(){
+    cAttack *= 2;
+    print('이번 턴에 공격력이 2배 증가하였습니다. 공격력: $cAttack');
+    item = false;
   }
 }
 
