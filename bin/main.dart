@@ -133,7 +133,7 @@ class Game{
       String? choise = stdin.readLineSync();
 
       if(choise == '1'){
-        if(attackTurn(monster, false)){
+        if(attackTurn(monster, false)){ //attackTurn 함수에서 true값 반환(몬스터 체력 0)되면 break실행
           break;
         }
       }else if(choise == '2'){
