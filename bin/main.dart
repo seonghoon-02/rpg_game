@@ -30,14 +30,21 @@ class Game{
       final contents = file.readAsStringSync();
       final stats = contents.split(',');
       if (stats.length != 3) throw FormatException('Invalid character data');
-        
+
       int cHealth = int.parse(stats[0]);
       int cAttack = int.parse(stats[1]);
       int cDefense = int.parse(stats[2]);
       Map<String, String> result = {'monster name' : 'win or lose'};
       
-
       character = Character(cName, cHealth, cAttack, cDefense, result);
+
+      
+      if(Random().nextInt(10) < 3){  //캐릭터 생성시 33%확률로 보너스 체력 부여.
+        int bonusHealth = 30;
+        character.cHealth += bonusHealth;
+        print('보너스 체력 $bonusHealth을 었었습니다! 현재 체력: ${character.cHealth}');
+      }
+
     } catch (e) {
       print('캐릭터 데이터를 불러오는 데 실패했습니다: $e');
       exit(1);
