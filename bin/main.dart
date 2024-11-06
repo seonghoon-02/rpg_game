@@ -13,17 +13,18 @@ void main() {
 
   while(gameContinue){
     game.battle(login.uName);
-    gameContinue = game.startGame(login.uName);
+    gameContinue = game.startGame(game.character);
   }
 }
 
 //게임을 정의하기 위한 클래스
 class Game{
   Random random = Random();
+  Save save = Save();
   List<Monster> monsterList = [];
   late Character character; //loadCharacterStats()에서 정의됨. late사용.
 
-  void loadCharacterStats(cName) {
+  void loadCharacterStats(cName) { //캐릭터 불러오기
     try {
       final file = File('../assets/characters.txt');
       final contents = file.readAsStringSync();
@@ -33,15 +34,17 @@ class Game{
       int cHealth = int.parse(stats[0]);
       int cAttack = int.parse(stats[1]);
       int cDefense = int.parse(stats[2]);
+      Map<String, String> result = {'monster name' : 'win or lose'};
+      
 
-      character = Character(cName, cHealth, cAttack, cDefense);
+      character = Character(cName, cHealth, cAttack, cDefense, result);
     } catch (e) {
       print('캐릭터 데이터를 불러오는 데 실패했습니다: $e');
       exit(1);
     }
   }
 
-  void loadMonsterStats() {
+  void loadMonsterStats() { //몬스터 불러오기
     try {
       final file = File('../assets/monsters.txt');
       final contents = file.readAsStringSync();
@@ -63,7 +66,7 @@ class Game{
 
 
   //게임을 재시작하는 메서드
-  bool startGame(cName){
+  bool startGame(Character character){
     if(monsterList.isEmpty){   //몬스터 리스트에 남은 몬스터가 없을시 종료 
         print('모든 몬스터를 물리쳤습니다!');
         return false;
@@ -79,6 +82,7 @@ class Game{
       if(choise == 'y'){
         return true;
       }else if(choise == 'n'){
+        save.saveChoice(character);
         return false;
       }else{
         print('입력값이 유효하지 않습니다. y, n 중에 입력하여 주세요.');
@@ -96,12 +100,17 @@ class Game{
     while(true){
       if(character.cHealth <= 0){
         print('${character.cName}이 패배하였습니다.');
+        character.result[monster.mName] = 'lose';   //결과 기록
+        character.cHealth = 0;
+        save.saveChoice(character);
         break;
       }
       print('');
       print('$name의 턴');
+
       stdout.write('행동을 선택하세요 (1: 공격, 2: 방어): '); //줄바꿈 없이 선택한 번호 출력
       String? choise = stdin.readLineSync();
+
       if(choise == '1'){
         character.attackMonster(monster);
           if(monster.mHealth > 0){
@@ -110,6 +119,7 @@ class Game{
             monster.showStatus();
           }else{
             print('${monster.mName}을(를) 물리쳤습니다!');
+            character.result[monster.mName] = 'win';   //결과 기록
             print('');
             break;
           }
@@ -164,8 +174,9 @@ class Character {
   int cHealth;  //캐릭터 체력
   int cAttack;   //캐릭터 공격력
   int cDefense;  //캐릭터 방어력
+  Map<String, String> result;
 
-  Character(this.cName, this.cHealth, this.cAttack, this.cDefense);
+  Character(this.cName, this.cHealth, this.cAttack, this.cDefense, this.result);
 
   //캐릭터가 몬스터에게 공격하는 메서드
   attackMonster(Monster monster){
@@ -186,7 +197,7 @@ class Character {
   //상태 출력 메서드
   showStatus(){
     int health;
-    if (cHealth < 0){
+    if (cHealth < 0){   //체력에 -표시 안나도록
       health = 0;
     }else{
       health = cHealth;
@@ -219,5 +230,30 @@ class Monster {
   //몬스터의 현재 체력, 공격력 출력
   showStatus(){
     print('$mName - 체력: $mHealth, 공격력: $mAttack');
+  }
+}
+
+class Save {
+  var file = File('../save/result.txt');
+
+  saveChoice(Character character){
+    while(true){
+      stdout.write('저장하시겠습니까? (y/n): '); //줄바꿈 없이 선택한 번호 출력
+      String? saveChoise = stdin.readLineSync();
+      if(saveChoise == 'y'){
+        String result = 'character name : ${character.cName}, character health : ${character.cHealth}, game result : ${character.result}';  //캐릭터의 이름, 남은 체력, 게임 결과(승리/패배) 
+        fileSave(result);
+        return;
+      }else if(saveChoise == 'n'){
+        return;
+      }else{
+        print('입력값이 유효하지 않습니다. y, n 중에 입력하여 주세요.');
+      }
+    }
+  }
+
+  fileSave(String result){
+    String contents = result;
+    file.writeAsStringSync(contents);
   }
 }
