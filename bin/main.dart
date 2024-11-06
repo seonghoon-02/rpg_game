@@ -104,19 +104,25 @@ class Game{
     print('새로운 몬스터가 나타났습니다!');
     Monster monster = getRandomMonster();
     print('${monster.mName} - 체력: ${monster.mHealth}, 공격력: ${monster.mAttack}');
+    int turn = 1;
 
     while(true){
       if(character.cHealth <= 0){
         print('${character.cName}이 패배하였습니다.');
         character.result[monster.mName] = 'lose';   //결과 기록
         character.cHealth = 0;
-        save.saveChoice(character);
+        save.saveChoice(character); //저장여부 확인
         break;
       }
+
       print('');
+      if(turn % 3 == 0){   // 3턴 마다 몬스터 방어력 2 증가
+        monster.mDefense += 10;
+        print('${monster.mName}의 방어력이 2 증가하였습니다! 현재 방어력: ${monster.mDefense}');
+      }
       print('$name의 턴');
 
-      String attackManu;
+      String attackManu; //item사용시 메뉴에서 사라짐
       if(character.item){
         attackManu = '행동을 선택하세요 (1: 공격, 2: 방어, 3: item사용_남은 횟수 1회): ';
       }else{
@@ -129,7 +135,7 @@ class Game{
       if(choise == '1'){
         if(attackTurn(monster, false)){
           break;
-        };
+        }
       }else if(choise == '2'){
         character.defend(monster);
         monster.attackCharacter(character);
@@ -141,10 +147,12 @@ class Game{
       }else{
         print('입력값이 유효하지 않습니다.');
       }
+      turn++;
     }      
   }
 
-  bool attackTurn(Monster monster, bool itemAttack){  //공격 턴 주고 받는 함수. 위의 1번, 3번 선택시 공격해야 하므로 코드 중복으로 함수로 빼옴.
+  //공격 턴 주고 받는 함수. 위의 1번, 3번 선택시 공격해야 하므로 코드 중복으로 함수로 빼옴.
+  bool attackTurn(Monster monster, bool itemAttack){
     character.attackMonster(monster);
     if(monster.mHealth > 0){
       monster.attackCharacter(character);
@@ -280,7 +288,8 @@ class Save {
       stdout.write('저장하시겠습니까? (y/n): '); //줄바꿈 없이 선택한 번호 출력
       String? saveChoise = stdin.readLineSync();
       if(saveChoise == 'y'){
-        String result = 'character name : ${character.cName}, character health : ${character.cHealth}, game result : ${character.result}';  //캐릭터의 이름, 남은 체력, 게임 결과(승리/패배) 
+        //캐릭터의 이름, 남은 체력, 게임 결과(승리/패배) 
+        String result = 'character name : ${character.cName}, character health : ${character.cHealth}, game result : ${character.result}';
         fileSave(result);
         return;
       }else if(saveChoise == 'n'){
