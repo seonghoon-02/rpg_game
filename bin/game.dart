@@ -108,7 +108,7 @@ class Game{
       }
       print('$name의 턴');
 
-      stdout.write('행동을 선택하세요 (1: 공격, 2: 방어, 3: item사용_남은 횟수 ${character.item}회): '); //줄바꿈 없이 선택한 번호 출력
+      stdout.write('행동을 선택하세요 (1: 공격, 2: 방어, 3: item사용_보유 수량 ${character.item}개): '); //줄바꿈 없이 선택한 번호 출력
       String? choise = stdin.readLineSync();
 
       if(choise == '1'){
@@ -123,6 +123,8 @@ class Game{
       }else if(choise == '3' && character.item > 0){
         character.itemUse();
         attackTurn(monster, true);
+      }else if(choise == '3' && character.item == 0){
+        print('보유 아이템이 없습니다.');
       }else{
         print('입력값이 유효하지 않습니다.');
       }
