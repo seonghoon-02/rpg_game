@@ -18,11 +18,12 @@ class Monster {
       damage = 0;
     }
     character.cHealth -= damage;
+    if(character.cHealth < 0) character.cHealth = 0;
     print('$mName이(가) ${character.cName}에게 $damage의 데미지를 입혔습니다.');
   }
 
   //몬스터의 현재 체력, 공격력 출력
   showStatus(){
-    print('$mName - 체력: $mHealth, 공격력: $mAttack');
+    print('$mName - 체력: $mHealth, 공격력: $mAttack, 방어력: $mDefense');
   }
 }

@@ -23,8 +23,9 @@ class Game{
       int cDefense = int.parse(stats[2]);
       Map<String, String> result = {'monster name' : 'win or lose'};
       int item = 1;
+      int cMagicPoint = 20;
       
-      character = Character(cName, cHealth, cAttack, cDefense, result, item);
+      character = Character(cName, cHealth, cAttack, cDefense, result, item, cMagicPoint);
 
       
       if(Random().nextInt(10) < 3){  //캐릭터 생성시 33%확률로 보너스 체력 부여.
@@ -63,6 +64,7 @@ class Game{
   bool startGame(Character character){
     if(monsterList.isEmpty){   //몬스터 리스트에 남은 몬스터가 없을시 종료 
         print('모든 몬스터를 물리쳤습니다!');
+        save.saveChoice(character);
         return false;
     }
 
@@ -89,10 +91,17 @@ class Game{
     print('');
     print('새로운 몬스터가 나타났습니다!');
     Monster monster = getRandomMonster();
-    print('${monster.mName} - 체력: ${monster.mHealth}, 공격력: ${monster.mAttack}');
+    monster.showStatus();
     int turn = 1;
 
     while(true){
+      if(monster.mHealth <= 0){ //몬스터 체력 0되면 break실행
+          print('${monster.mName}을(를) 물리쳤습니다!');
+          character.result[monster.mName] = 'win';   //결과 기록
+          print('');
+          break;
+        }
+
       if(character.cHealth <= 0){
         print('${character.cName}이 패배하였습니다.');
         character.result[monster.mName] = 'lose';   //결과 기록
@@ -108,13 +117,16 @@ class Game{
       }
       print('$name의 턴');
 
-      stdout.write('행동을 선택하세요 (1: 공격, 2: 방어, 3: item사용_보유 수량 ${character.item}개): '); //줄바꿈 없이 선택한 번호 출력
+      stdout.write('행동을 선택하세요 (1: 공격, 2: 방어, 3: HP물약 사용_보유 수량 ${character.item}개, 4: 공격력UP 마법 사용_필요 MP: 20, 현재 MP: ${character.cMagicPoint}): '); //줄바꿈 없이 선택한 번호 출력
       String? choise = stdin.readLineSync();
 
       if(choise == '1'){
-        if(attackTurn(monster, false)){ //attackTurn 함수에서 true값 반환(몬스터 체력 0)되면 break실행
-          break;
+        character.attackMonster(monster);
+        if(monster.mHealth > 0){
+          monster.attackCharacter(character);
         }
+        character.showStatus();
+        monster.showStatus();
       }else if(choise == '2'){
         character.defend(monster);
         monster.attackCharacter(character);
@@ -122,33 +134,31 @@ class Game{
         monster.showStatus();
       }else if(choise == '3' && character.item > 0){
         character.itemUse();
-        attackTurn(monster, true);
+        monster.attackCharacter(character);
+        character.showStatus();
+        monster.showStatus();
       }else if(choise == '3' && character.item == 0){
         print('보유 아이템이 없습니다.');
+        continue;
+      }else if(choise == '4' && character.cMagicPoint >= 20){
+        character.magicUse();
+        character.attackMonster(monster);
+        if(monster.mHealth > 0){
+          monster.attackCharacter(character);
+        }
+        character.cAttack ~/= 2;  //공격력 원상복구
+        character.showStatus();
+        monster.showStatus();
+      }else if(choise == '4' && character.cMagicPoint < 20){
+        print('MP가 부족합니다. 필요 MP: 20, 현재 MP: ${character.cMagicPoint}');
+        continue;
+
       }else{
         print('입력값이 유효하지 않습니다.');
+        continue;
       }
       turn++;
     }      
-  }
-
-  //공격 턴 주고 받는 함수. 위의 1번, 3번 선택시 공격해야 하므로 코드 중복으로 함수로 빼옴.
-  bool attackTurn(Monster monster, bool itemAttack){
-    character.attackMonster(monster);
-    if(monster.mHealth > 0){
-      monster.attackCharacter(character);
-      if(itemAttack){
-        character.cAttack ~/= 2;  //공격력 원상복구
-      }
-      character.showStatus();
-      monster.showStatus();
-      return false;
-    }else{
-      print('${monster.mName}을(를) 물리쳤습니다!');
-      character.result[monster.mName] = 'win';   //결과 기록
-      print('');
-      return true;
-    }
   }
 
   //랜덤으로 몬스터를 불러오는 메서드
