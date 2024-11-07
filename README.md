@@ -1,2 +1,79 @@
-A sample command-line application with an entrypoint in `bin/`, library code
-in `lib/`, and example unit test in `test/`.
+<h1 align="center">
+콘솔 전투 RPG 게임
+</h1>
+<p align="center">
+</p>
+
+## 프로젝트 개요
+### 콘솔에서 몬스터와 전투를 벌이는 게임
+
+#### 💡 '콘솔 전투 RPG 게임'은 제작하면서 dart문법을 익히기 위해 만들어졌습니다.
+
+
+
+## 팀원 구성
+
+| **고성훈** |
+
+
+
+### 프로젝트 일정
+24/11/04~24/11/07
+
+
+
+### 사용 문법
+| class | stdin.readLineSync | file save & load | stdout.write | try catch | random.nextInt | 정규표현식 |
+   
+
+
+## 주요 기능
+
+| 홈 화면 | [1] 공격 | [2] 방어 | [3] HP물약 사용(item) | [4] 공격력UP 마법 사용 | [5] 종료 |
+| --- | --- | --- | --- | --- | --- |
+| 캐릭터명 입력 | 캐릭터, 몬스터간 1회씩 공격 주고 받음 | 캐릭터 : HP, MP 소량 회복<br> 몬스터 : 공격 | 캐릭터 : HP 대량 회복<br> 몬스터 : 공격 | 캐릭터 : 2배 공격력으로 공격<br> 몬스터 : 공격 | 종료 |
+
+- 시작시 30%의 확률로 캐릭터에게 보너스 체력 부여됨
+- 몬스터의 순서 및 공격력은 랜덤 부여됨
+- 동일 몬스터와 3턴동안 배틀시 몬스터의 방어력이 추가됨
+- 프로그램 종료 전 저장 가능
+
+
+<br/>
+
+## TroubleShooting
+
+#### class간 변수 사용방법
+
+1. 문제 정의
+
+    - monster클래스를 만듬. game클래스에서 monster 생성자 생성하면서 정의.
+      game에서 정의된 monster클래스의 변수를 character클래스에서 사용하고 싶은데
+      방법을 알지 못함
+
+
+2. 사실 수집
+
+    - character클래스에서 정의된 함수를 game에서 실행해야 함.
+
+
+3. 원인 추론
+
+    - 클래스를 이용하는 방법 미숙
+
+
+4. 조사 방법 결정
+
+    - 구글 서칭
+
+
+5. 조사 방법 구현
+
+    - character클래스에서 정의된 함수를 game에서 호출할 때 monster를 매개변수로 전달 
+    - 전달된 매개변수 monster을 이용하여 character클래스에서 사용
+
+
+6. 결과 관찰
+
+    - 원하는 값 도출
+
