@@ -22,7 +22,7 @@ class Game{
       int cAttack = int.parse(stats[1]);
       int cDefense = int.parse(stats[2]);
       Map<String, String> result = {'monster name' : 'win or lose'};
-      bool item = true;
+      int item = 1;
       
       character = Character(cName, cHealth, cAttack, cDefense, result, item);
 
@@ -108,14 +108,7 @@ class Game{
       }
       print('$name의 턴');
 
-      String attackManu; //item사용시 메뉴에서 사라짐
-      if(character.item){
-        attackManu = '행동을 선택하세요 (1: 공격, 2: 방어, 3: item사용_남은 횟수 1회): ';
-      }else{
-        attackManu = '행동을 선택하세요 (1: 공격, 2: 방어): ';
-      }
-
-      stdout.write(attackManu); //줄바꿈 없이 선택한 번호 출력
+      stdout.write('행동을 선택하세요 (1: 공격, 2: 방어, 3: item사용_남은 횟수 ${character.item}회): '); //줄바꿈 없이 선택한 번호 출력
       String? choise = stdin.readLineSync();
 
       if(choise == '1'){
@@ -127,7 +120,7 @@ class Game{
         monster.attackCharacter(character);
         character.showStatus();
         monster.showStatus();
-      }else if(choise == '3' && character.item){
+      }else if(choise == '3' && character.item > 0){
         character.itemUse();
         attackTurn(monster, true);
       }else{
