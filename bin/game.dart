@@ -3,13 +3,17 @@ import 'dart:math';
 import 'character.dart';
 import 'monster.dart';
 import 'save.dart';
+import 'logout.dart';
 
 //게임을 정의하기 위한 클래스
 class Game{
   Random random = Random();
   Save save = Save();
+  Logout logout = Logout();
+
   List<Monster> monsterList = [];
   late Character character; //loadCharacterStats()에서 정의됨. late사용.
+  bool onOff = true;
 
   void loadCharacterStats(cName) { //캐릭터 불러오기
     try {
@@ -117,7 +121,9 @@ class Game{
       }
       print('$name의 턴');
 
-      stdout.write('행동을 선택하세요 (1: 공격, 2: 방어, 3: HP물약 사용_보유 수량 ${character.item}개, 4: 공격력UP 마법 사용_필요 MP: 20, 현재 MP: ${character.cMagicPoint}): '); //줄바꿈 없이 선택한 번호 출력
+      //줄바꿈 없이 선택한 번호 출력
+      stdout.write('행동을 선택하세요 (1: 공격, 2: 방어, 3: HP물약 사용_보유 수량 ${character.item}개, 4: 공격력UP 마법 사용_필요 MP: 20, 현재 MP: ${character.cMagicPoint}), 5: 종료 : '); 
+      
       String? choise = stdin.readLineSync();
 
       if(choise == '1'){
@@ -152,7 +158,9 @@ class Game{
       }else if(choise == '4' && character.cMagicPoint < 20){
         print('MP가 부족합니다. 필요 MP: 20, 현재 MP: ${character.cMagicPoint}');
         continue;
-
+      }else if(choise == '5'){
+        onOff = logout.logout(character, monster);
+        break;
       }else{
         print('입력값이 유효하지 않습니다.');
         continue;
